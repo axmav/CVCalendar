@@ -146,6 +146,34 @@ public final class CVCalendarDayView: UIView {
     }
 }
 
+extension CVCalendarDayView {
+    func updateLabels() {
+        let appearance = calendarView.appearance
+        var color: UIColor?
+        
+        if isDisabled {
+            color = appearance?.dayLabelWeekdayDisabledColor
+        } else if isOut {
+            color = appearance?.dayLabelWeekdayOutTextColor
+        } else if isCurrentDay {
+            let coordinator = calendarView.coordinator
+            if coordinator?.selectedDayView == nil && calendarView.shouldAutoSelectDayOnMonthChange {
+                let touchController = calendarView.touchController
+                touchController?.receiveTouchOnDayView(self)
+                calendarView.didSelectDayView(self)
+                color = appearance?.dayLabelPresentWeekdaySelectedTextColor
+            } else {
+                color = appearance?.dayLabelPresentWeekdayTextColor
+            }
+            
+        } else {
+            color = appearance?.dayLabelWeekdayInTextColor
+        }
+        
+        dayLabel?.textColor = color
+    }
+}
+
 // MARK: - Subviews setup
 
 extension CVCalendarDayView {
@@ -211,6 +239,7 @@ extension CVCalendarDayView {
         if let shouldSelect = calendarView.delegate?.shouldSelectDayView?(self) {
             self.isUserInteractionEnabled = shouldSelect
         }
+        updateLabels()
     }
     
     public func preliminarySetup() {
@@ -294,7 +323,7 @@ extension CVCalendarDayView {
                 if let size = delegate.dotMarker?(sizeOnDayView: self) {
                     (width, height) = (size, size)
                 }
-                let colors = isOut ? [.gray] : delegate.dotMarker?(colorOnDayView: self)
+                let colors = delegate.dotMarker?(colorOnDayView: self)
                 var yOffset = bounds.height / 5
                 if let y = delegate.dotMarker?(moveOffsetOnDayView: self) {
                     yOffset = y
