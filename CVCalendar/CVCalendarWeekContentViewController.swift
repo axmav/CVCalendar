@@ -514,16 +514,12 @@ extension CVCalendarWeekContentViewController {
     public func selectDayViewWithDay(_ day: Int, inWeekView weekView: WeekView) {
         let coordinator = calendarView.coordinator
         weekView.mapDayViews { dayView in
-            if dayView.date.day == day && !dayView.isOut {
-                if !dayView.isDisabled {
-                    if coordinator?.selectedDayView != dayView {
-                        self.calendarView.didSelectDayView(dayView)
-                    }
-
-                    coordinator?.performDayViewSingleSelection(dayView)
-                } else {
-                    coordinator?.selectedDayView = nil
+            if dayView.date.day == day && !dayView.isOut && !dayView.isDisabled {
+                if let selected = coordinator?.selectedDayView , selected != dayView {
+                    self.calendarView.didSelectDayView(dayView)
                 }
+
+                coordinator?.performDayViewSingleSelection(dayView)
             }
         }
     }
