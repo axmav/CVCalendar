@@ -516,7 +516,7 @@ extension CVCalendarWeekContentViewController {
         weekView.mapDayViews { dayView in
             if dayView.date.day == day && !dayView.isOut {
                 if !dayView.isDisabled {
-                    if let selected = coordinator?.selectedDayView , selected != dayView {
+                    if coordinator?.selectedDayView != dayView {
                         self.calendarView.didSelectDayView(dayView)
                     }
 
