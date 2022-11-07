@@ -322,6 +322,19 @@ public final class CVCalendarWeekContentViewController: CVCalendarContentViewCon
 // MARK: - WeekView management
 
 extension CVCalendarWeekContentViewController {
+    
+    public func update() {
+        weekViews.forEach { key, weekV in
+            for dayView in weekV.dayViews {
+                removeCircleLabel(dayView)
+                dayView.setupDotMarker()
+                dayView.preliminarySetup()
+                dayView.supplementarySetup()
+                dayView.topMarkerSetup()
+                dayView.interactionSetup()
+            }
+        }
+    }
 
     public func getPresentedWeek() -> WeekView? {
         guard let currentWeekView = weekViews[presented] else {

@@ -167,6 +167,12 @@ extension CVCalendarDayView {
             color = appearance?.dayLabelWeekdayInTextColor
         }
         
+        if let coordinator = calendarView.coordinator, let selectedDayView = coordinator.selectedDayView {
+            if selectedDayView == self {
+                color = appearance?.dayLabelPresentWeekdaySelectedTextColor
+            }
+        }
+        
         dayLabel?.textColor = color
     }
 }
