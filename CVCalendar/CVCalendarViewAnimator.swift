@@ -12,7 +12,7 @@ public final class CVCalendarViewAnimator {
     fileprivate var calendarView: CalendarView?
 
     // MARK: - Public properties
-    public weak var delegate: CVCalendarViewAnimatorDelegate!
+    public weak var delegate: CVCalendarViewAnimatorDelegate?
     public var coordinator: CVCalendarDayViewControlCoordinator? {
         return calendarView?.coordinator
     }
@@ -28,6 +28,9 @@ public final class CVCalendarViewAnimator {
 
 extension CVCalendarViewAnimator {
     public func animateSelectionOnDayView(_ dayView: DayView) {
+        guard let delegate = delegate else {
+            return
+        }
         let selectionAnimation = delegate.selectionAnimation()
         let selectionType = (calendarView?.shouldSelectRange ?? false) ? CVSelectionType.range(.changed) : CVSelectionType.single
         dayView.setSelectedWithType(selectionType)
@@ -37,6 +40,9 @@ extension CVCalendarViewAnimator {
     }
 
     public func animateDeselectionOnDayView(_ dayView: DayView) {
+        guard let delegate = delegate else {
+            return
+        }
         let deselectionAnimation = delegate.deselectionAnimation()
         deselectionAnimation(dayView) { [weak dayView] _ in
             if let selectedDayView = dayView {

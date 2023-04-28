@@ -40,6 +40,9 @@ class ViewController: UIViewController {
             monthLabel.text = CVDate(date: Date(), calendar: currentCalendar).globalDescription
         }
         
+        calendarView.animatorDelegate = self
+        calendarView.contentController.scrollView.isScrollEnabled = false
+        
         randomizeDotMarkers()
     }
     
@@ -84,7 +87,7 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
     
     func presentationMode() -> CalendarMode { return .monthView }
     
-    func firstWeekday() -> Weekday { return .sunday }
+    func firstWeekday() -> Weekday { return .monday }
     
     // MARK: Optional methods
     
@@ -96,12 +99,10 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
     
     func shouldShowWeekdaysOut() -> Bool { return shouldShowDaysOut }
     
+    func shouldScrollOnOutDayViewSelection() -> Bool { return false }
+    
     // Defaults to true
     func shouldAnimateResizing() -> Bool { return true }
-    
-    private func shouldSelectDayView(dayView: DayView) -> Bool {
-        return arc4random_uniform(3) == 0 ? true : false
-    }
     
     func shouldAutoSelectDayOnMonthChange() -> Bool { return false }
     
@@ -109,48 +110,14 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
         selectedDay = dayView
     }
     
-    func shouldSelectRange() -> Bool { return true }
+    func shouldSelectRange() -> Bool { return false }
     
     func didSelectRange(from startDayView: DayView, to endDayView: DayView) {
         print("RANGE SELECTED: \(startDayView.date.commonDescription) to \(endDayView.date.commonDescription)")
     }
     
     func presentedDateUpdated(_ date: CVDate) {
-        if monthLabel.text != date.globalDescription && self.animationFinished {
-            let updatedMonthLabel = UILabel()
-            updatedMonthLabel.textColor = monthLabel.textColor
-            updatedMonthLabel.font = monthLabel.font
-            updatedMonthLabel.textAlignment = .center
-            updatedMonthLabel.text = date.globalDescription
-            updatedMonthLabel.sizeToFit()
-            updatedMonthLabel.alpha = 0
-            updatedMonthLabel.center = self.monthLabel.center
-            
-            let offset = CGFloat(48)
-            updatedMonthLabel.transform = CGAffineTransform(translationX: 0, y: offset)
-            updatedMonthLabel.transform = CGAffineTransform(scaleX: 1, y: 0.1)
-            
-            UIView.animate(withDuration: 0.35, delay: 0, options: UIView.AnimationOptions.curveEaseIn, animations: {
-                self.animationFinished = false
-                self.monthLabel.transform = CGAffineTransform(translationX: 0, y: -offset)
-                self.monthLabel.transform = CGAffineTransform(scaleX: 1, y: 0.1)
-                self.monthLabel.alpha = 0
-                
-                updatedMonthLabel.alpha = 1
-                updatedMonthLabel.transform = CGAffineTransform.identity
-                
-            }) { _ in
-                
-                self.animationFinished = true
-                self.monthLabel.frame = updatedMonthLabel.frame
-                self.monthLabel.text = updatedMonthLabel.text
-                self.monthLabel.transform = CGAffineTransform.identity
-                self.monthLabel.alpha = 1
-                updatedMonthLabel.removeFromSuperview()
-            }
-            
-            self.view.insertSubview(updatedMonthLabel, aboveSubview: self.monthLabel)
-        }
+        
     }
     
     func topMarker(shouldDisplayOnDayView dayView: CVCalendarDayView) -> Bool { return true }
@@ -162,10 +129,10 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
     func weekdaySymbolType() -> WeekdaySymbolType { return .short }
     
     func selectionViewPath() -> ((CGRect) -> (UIBezierPath)) {
-        return { UIBezierPath(rect: CGRect(x: 0, y: 0, width: $0.width, height: $0.height)) }
+        return { UIBezierPath(rect: CGRect(x: 0, y: 0, width: $0.width, height: $0.height).insetBy(dx: 4, dy: 4)) }
     }
     
-    func shouldShowCustomSingleSelection() -> Bool { return false }
+    func shouldShowCustomSingleSelection() -> Bool { return true }
     
     func preliminaryView(viewOnDayView dayView: DayView) -> UIView {
         let circleView = CVAuxiliaryView(dayView: dayView, rect: dayView.frame, shape: CVShape.circle)
@@ -188,10 +155,11 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
         let π = Double.pi
         
         let ringLayer = CAShapeLayer()
-        let ringLineWidth: CGFloat = 4.0
-        let ringLineColour = UIColor.blue
+        let ringLineWidth: CGFloat = 1.0
+        let ringLineColour = UIColor.black
         
         let newView = UIView(frame: dayView.frame)
+        //newView.backgroundColor = .red
         
         let diameter = (min(newView.bounds.width, newView.bounds.height))
         let radius = diameter / 2.0 - ringLineWidth
@@ -205,11 +173,7 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
         let centrePoint = CGPoint(x: newView.bounds.width/2.0, y: newView.bounds.height/2.0)
         let startAngle = CGFloat(-π/2.0)
         let endAngle = CGFloat(π * 2.0) + startAngle
-        let ringPath = UIBezierPath(arcCenter: centrePoint,
-                                    radius: radius,
-                                    startAngle: startAngle,
-                                    endAngle: endAngle,
-                                    clockwise: true)
+        let ringPath = selectionViewPath()(newView.bounds)
         
         ringLayer.path = ringPath.cgPath
         ringLayer.frame = newView.layer.bounds
@@ -230,15 +194,36 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
         if dayView.date.year == components.year &&
             dayView.date.month == components.month {
             
-            if (dayView.date.day == 3 || dayView.date.day == 13 || dayView.date.day == 23)  {
+            if (dayView.date.day == 3 || dayView.date.day == 13 || dayView.date.day == 28)  {
                 print("Circle should appear on " + dayView.date.commonDescription)
                 shouldDisplay = true
             }
-        } else if (Int(arc4random_uniform(3)) == 1) {
-            shouldDisplay = true
         }
         
         return shouldDisplay
+    }
+    
+    func shouldSelectDayView(_ dayView: DayView) -> Bool {
+        if (dayView.date.day == 11)  {
+            return false
+        }
+        return true
+    }
+    
+    func dotMarker(shouldShowOnDayView dayView: DayView) -> Bool {
+        return false
+    }
+    
+    func dotMarker(colorOnDayView dayView: DayView) -> [UIColor] {
+        return [.red]
+    }
+    
+    func dotMarker(sizeOnDayView dayView: DayView) -> CGFloat {
+        return 16.0
+    }
+    
+    func dotMarker(moveOffsetOnDayView dayView: DayView) -> CGFloat {
+        return 18.0
     }
     
     func dayOfWeekTextColor() -> UIColor { return .white }
@@ -268,6 +253,8 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
 
 extension ViewController: CVCalendarViewAppearanceDelegate {
     
+    
+    
     func dayLabelWeekdayDisabledColor() -> UIColor { return .lightGray }
     
     func dayLabelPresentWeekdayInitallyBold() -> Bool { return false }
@@ -296,6 +283,25 @@ extension ViewController: CVCalendarViewAppearanceDelegate {
 }
 
 // MARK: - IB Actions
+
+extension ViewController: AnimatorDelegate {
+    func selectionAnimation() -> ((DayView, @escaping ((Bool) -> ())) -> ()) {
+        return {
+            dayView, completion in
+            dayView.selectionView?.isHidden = false
+            completion(true)
+        }
+    }
+    
+    func deselectionAnimation() -> ((DayView, @escaping ((Bool) -> ())) -> ()) {
+        return {
+            dayView, completion in
+            dayView.setDeselectedWithClearing(false)
+            dayView.selectionView?.isHidden = true
+            completion(true)
+        }
+    }
+}
 
 extension ViewController {
     @IBAction func switchChanged(sender: UISwitch) {
