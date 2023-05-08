@@ -284,10 +284,6 @@ extension CVCalendarView {
     
         setNeedsLayout()
         layoutIfNeeded()
-        updateLayout()
-    }
-    
-    private func updateLayout() {
         if let _ = delegate, let contentController = contentController {
             let contentViewSize = contentController.bounds.size
             let selfSize = bounds.size
@@ -295,7 +291,7 @@ extension CVCalendarView {
 
             let allowed = selfSize.width <= screenSize.width && selfSize.height <= screenSize.height
 
-            if allowed {
+            if !validated && allowed {
                 let width = selfSize.width
                 let height: CGFloat
                 let countOfWeeks = CGFloat(6)
