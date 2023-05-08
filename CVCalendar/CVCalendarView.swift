@@ -243,11 +243,6 @@ public final class CVCalendarView: UIView {
         super.init(frame: frame)
         isHidden = true
     }
-    
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        updateLayout()
-    }
 
     // IB Initialization
     public required init?(coder aDecoder: NSCoder) {
@@ -289,6 +284,7 @@ extension CVCalendarView {
     
         setNeedsLayout()
         layoutIfNeeded()
+        updateLayout()
     }
     
     private func updateLayout() {
