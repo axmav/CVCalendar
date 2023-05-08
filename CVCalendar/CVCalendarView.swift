@@ -292,48 +292,55 @@ extension CVCalendarView {
             let allowed = selfSize.width <= screenSize.width && selfSize.height <= screenSize.height
 
             if !validated && allowed {
-                let width = selfSize.width
-                let height: CGFloat
-                let countOfWeeks = CGFloat(6)
+                updateCalendarViewLayout()
+            }
+        }
+    }
+    
+    public func updateCalendarViewLayout() {
+        let contentViewSize = contentController.bounds.size
+        let selfSize = bounds.size
+        let screenSize = UIScreen.main.bounds.size
+        let width = selfSize.width
+        let height: CGFloat
+        let countOfWeeks = CGFloat(6)
 
-                let vSpace = appearance.spaceBetweenWeekViews!
-                let hSpace = appearance.spaceBetweenDayViews!
-                
-                if selfSize.height > maxHeight {
-                    maxHeight = selfSize.height
-                }
+        let vSpace = appearance.spaceBetweenWeekViews!
+        let hSpace = appearance.spaceBetweenDayViews!
+        
+        if selfSize.height > maxHeight {
+            maxHeight = selfSize.height
+        }
 
-                if let mode = calendarMode {
-                    switch mode {
-                    case .weekView:
-                        height = contentViewSize.height
-                        contentController.updateHeight(height, animated: false)
-                    case .monthView :
-                        height = (maxHeight / countOfWeeks) - vSpace
-                    }
+        if let mode = calendarMode {
+            switch mode {
+            case .weekView:
+                height = contentViewSize.height
+                contentController.updateHeight(height, animated: false)
+            case .monthView :
+                height = (maxHeight / countOfWeeks) - vSpace
+            }
 
-                    // If no height constraint found we set it manually.
-                    var found = false
-                    for constraint in constraints {
-                        if constraint.firstAttribute == .height {
-                            found = true
-                        }
-                    }
-
-                    if !found {
-                        addConstraint(NSLayoutConstraint(item: self, attribute: .height,
-                            relatedBy: .equal, toItem: nil, attribute: .height,
-                            multiplier: 1, constant: frame.height))
-                    }
-
-                    weekViewSize = CGSize(width: width, height: height)
-                    dayViewSize = CGSize(width: (width / 7.0) - hSpace, height: height)
-                    validated = true
-
-                    contentController
-                        .updateFrames(selfSize != contentViewSize ? bounds : CGRect.zero)
+            // If no height constraint found we set it manually.
+            var found = false
+            for constraint in constraints {
+                if constraint.firstAttribute == .height {
+                    found = true
                 }
             }
+
+            if !found {
+                addConstraint(NSLayoutConstraint(item: self, attribute: .height,
+                    relatedBy: .equal, toItem: nil, attribute: .height,
+                    multiplier: 1, constant: frame.height))
+            }
+
+            weekViewSize = CGSize(width: width, height: height)
+            dayViewSize = CGSize(width: (width / 7.0) - hSpace, height: height)
+            validated = true
+
+            contentController
+                .updateFrames(selfSize != contentViewSize ? bounds : CGRect.zero)
         }
     }
 }
