@@ -522,3 +522,14 @@ extension CVCalendarMonthContentViewController {
         }
     }
 }
+
+// MARK: - Extra
+extension CVCalendarMonthContentViewController {
+    func getPreviousMonthView() -> MonthView? {
+        return monthViews[previous]
+    }
+    
+    func getFollowingMonthView() -> MonthView? {
+        return monthViews[following]
+    }
+}

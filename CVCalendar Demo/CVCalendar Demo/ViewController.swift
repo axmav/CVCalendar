@@ -22,6 +22,7 @@ class ViewController: UIViewController {
     private var selectedDay: DayView!
     private var currentCalendar: Calendar?
     
+    @IBOutlet weak var heightConst: NSLayoutConstraint!
     override func awakeFromNib() {
         let timeZoneBias = 480 // (UTC+08:00)
         currentCalendar = Calendar(identifier: .gregorian)
@@ -44,6 +45,17 @@ class ViewController: UIViewController {
         calendarView.contentController.scrollView.isScrollEnabled = false
         
         randomizeDotMarkers()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            // your code here
+            self.upd()
+        }
+    }
+    
+    func upd() {
+        print("Change constraint")
+        self.heightConst?.constant = 400
+        self.calendarView.commitCalendarViewUpdate(revalidate: true)
     }
     
     @IBAction func removeCircleAndDot(sender: AnyObject) {
@@ -117,7 +129,7 @@ extension ViewController: CVCalendarViewDelegate, CVCalendarMenuViewDelegate {
     }
     
     func presentedDateUpdated(_ date: CVDate) {
-        
+        monthLabel.text = date.globalDescription
     }
     
     func topMarker(shouldDisplayOnDayView dayView: CVCalendarDayView) -> Bool { return true }
@@ -355,6 +367,7 @@ extension ViewController {
         let components = Manager.componentsForDate(date, calendar: currentCalendar) // from today
         
         print("Showing Month: \(components.month!)")
+        calendarView.clearOldSelection()
     }
     
     
@@ -364,6 +377,7 @@ extension ViewController {
         let components = Manager.componentsForDate(date, calendar: currentCalendar) // from today
         
         print("Showing Month: \(components.month!)")
+        calendarView.clearOldSelection()
     }
   
     func didShowNextWeekView(from startDayView: DayView, to endDayView: DayView) {

@@ -256,6 +256,26 @@ public final class CVCalendarView: UIView {
 // MARK: - Frames update
 
 extension CVCalendarView {
+    public func clearOldSelection() {
+        let ctrl = contentController as! CVCalendarMonthContentViewController
+        if let monthView = ctrl.getPreviousMonthView() {
+            monthView.mapDayViews { dayView in
+                animator.animateDeselectionOnDayView(dayView)
+            }
+        }
+        if let monthView = ctrl.getFollowingMonthView() {
+            monthView.mapDayViews { dayView in
+                animator.animateDeselectionOnDayView(dayView)
+            }
+        }
+        coordinator.flush()
+    }
+    public func commitCalendarViewUpdate(revalidate: Bool) {
+        if revalidate {
+            validated = false
+        }
+        commitCalendarViewUpdate()
+    }
     public func commitCalendarViewUpdate() {
         if currentOrientation != UIDevice.current.orientation {
             validated = false

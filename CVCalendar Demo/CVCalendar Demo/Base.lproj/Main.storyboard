@@ -160,6 +160,7 @@
                     <connections>
                         <outlet property="calendarView" destination="T1w-UY-QHC" id="D3D-pv-Xhz"/>
                         <outlet property="daysOutSwitch" destination="ucX-go-wCw" id="jRQ-lm-HaD"/>
+                        <outlet property="heightConst" destination="3oZ-He-brt" id="uVc-Lj-une"/>
                         <outlet property="menuView" destination="ZPD-eB-kRA" id="zjt-49-rDh"/>
                         <outlet property="monthLabel" destination="xf5-AN-qLk" id="fGT-h7-JSE"/>
                     </connections>
