@@ -243,6 +243,11 @@ public final class CVCalendarView: UIView {
         super.init(frame: frame)
         isHidden = true
     }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        updateLayout()
+    }
 
     // IB Initialization
     public required init?(coder aDecoder: NSCoder) {
@@ -284,6 +289,9 @@ extension CVCalendarView {
     
         setNeedsLayout()
         layoutIfNeeded()
+    }
+    
+    private func updateLayout() {
         if let _ = delegate, let contentController = contentController {
             let contentViewSize = contentController.bounds.size
             let selfSize = bounds.size
@@ -291,7 +299,7 @@ extension CVCalendarView {
 
             let allowed = selfSize.width <= screenSize.width && selfSize.height <= screenSize.height
 
-            if !validated && allowed {
+            if allowed {
                 let width = selfSize.width
                 let height: CGFloat
                 let countOfWeeks = CGFloat(6)

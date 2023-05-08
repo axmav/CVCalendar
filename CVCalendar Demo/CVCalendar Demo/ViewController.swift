@@ -55,7 +55,6 @@ class ViewController: UIViewController {
     func upd() {
         print("Change constraint")
         self.heightConst?.constant = 400
-        self.calendarView.commitCalendarViewUpdate(revalidate: true)
     }
     
     @IBAction func removeCircleAndDot(sender: AnyObject) {
